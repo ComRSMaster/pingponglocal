@@ -9,14 +9,14 @@ class Block:
     PADDING = 50
     MOVE_RADIUS = min(WIDTH / 2, HEIGHT / 2) - PADDING
     CENTER = Vector2(WIDTH / 2, HEIGHT / 2)
-    BLOCK_WIDTH = 0.3
+    BLOCK_WIDTH = 0.5
     BLOCK_HEIGHT = 5
 
     # MAX_X = WIDTH - PADDING
     # MIN_X = PADDING
 
     def __init__(self):
-        self.angle = 0
+        self.angle = -3
 
     def render(self, screen: pygame.Surface):
         pygame.draw.circle(screen, (50, 50, 50), self.CENTER, self.MOVE_RADIUS)

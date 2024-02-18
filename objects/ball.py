@@ -8,43 +8,25 @@ from constants import WIDTH, HEIGHT
 from objects.block import Block
 
 
-# def drawLineWidth(surface, color, p1, p2, width):
-#     # delta vector
-#     d = (p2[0] - p1[0], p2[1] - p1[1])
-#
-#     # distance between the points
-#     dis = math.hypot(*d)
-#
-#     # normalized vector
-#     n = (d[0]/dis, d[1]/dis)
-#
-#     # perpendicular vector
-#     p = (-n[1], n[0])
-#
-#     # scaled perpendicular vector (vector from p1 & p2 to the polygon's points)
-#     sp = (p[0]*width/2, p[1]*width/2)
-#
-#     # points
-#     p1_1 = (p1[0] - sp[0], p1[1] - sp[1])
-#     p1_2 = (p1[0] + sp[0], p1[1] + sp[1])
-#     p2_1 = (p2[0] - sp[0], p2[1] - sp[1])
-#     p2_2 = (p2[0] + sp[0], p2[1] + sp[1])
-#
-#     # draw the polygon
-#     pygame.gfxdraw.aapolygon(surface, (p1_1, p1_2, p2_2, p2_1), color)
-#     pygame.gfxdraw.filled_polygon(surface, (p1_1, p1_2, p2_2, p2_1), color)
+class Ball(pygame.sprite.Sprite):
+    GRAVITY = Vector2(0, .01)
+    PATH_SIZE = 60
+    SCREEN_BOX = pygame.Rect(0, 0, WIDTH, HEIGHT)
 
-class Ball:
-    GRAVITY = Vector2(0, .001)
-    PATH_SIZE = 80
-
-    def __init__(self, position: Vector2, velocity: Vector2):
-        self.radius = 5
+    def __init__(self, position: Vector2, velocity: Vector2, group: pygame.sprite.Group):
+        super().__init__()
+        self.radius = 4
         self.pos = position
         self.vel = velocity
         self.arrow = deque(maxlen=self.PATH_SIZE)
         self.arrow.append(self.pos.__copy__())
+        self.add(group)
+
+        self.image = pygame.Surface([self.radius, self.radius])
+        self.rect = self.image.get_rect()
+
         self.in_zone = True
+        self.is_bounced = False
 
     def render_path(self, screen: pygame.Surface):
         pygame.draw.lines(screen, '#444444', False, self.arrow, 1)
@@ -55,22 +37,27 @@ class Ball:
         # for (ind, (left, right)) in enumerate(pairwise(self.arrow)):
         pygame.draw.circle(screen, 'white', self.pos, self.radius)
 
-    def process_physics(self, block: Block):
+    def update(self, block: Block):
         self.pos += self.vel
         self.vel += self.GRAVITY
         self.arrow.append(self.pos.__copy__())
+        dist_to_center = self.pos.distance_to((WIDTH / 2, HEIGHT / 2))
         if self.in_zone:
-            if self.pos.distance_to((WIDTH / 2, HEIGHT / 2)) >= Block.MOVE_RADIUS - self.radius:
+            if dist_to_center >= Block.MOVE_RADIUS - self.radius:
                 y = math.atan2(self.vel.x, self.vel.y)
                 to_center = self.pos - Block.CENTER
                 a = math.atan2(to_center.y, to_center.x)
-                # if block.angle % (2 * math.pi) < math.pi:
-                #     ang =
-                if abs(a + math.pi - block.angle % (2 * math.pi)) > Block.BLOCK_WIDTH:
-                    self.in_zone = False
-                else:
+                b = -block.angle % (2 * math.pi)
+                if min(abs(b - a), abs(b - 2 * math.pi - a)) > Block.BLOCK_WIDTH:
+                    if dist_to_center > Block.MOVE_RADIUS:
+                        self.in_zone = False
+                elif not self.is_bounced:
                     self.vel.rotate_ip_rad(2 * y + 2 * a)
-                print(a, block.angle, block.angle % (2 * math.pi))
+                    self.is_bounced = True
+            else:
+                self.is_bounced = False
+        elif not self.SCREEN_BOX.collidepoint(self.pos) or dist_to_center <= Block.MOVE_RADIUS:
+            self.kill()
 
     # def process_physics(self, block: pygame.Rect):
     #     self.pos += self.vel

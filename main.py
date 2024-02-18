@@ -1,15 +1,15 @@
 import pygame
 
 from constants import SIZE, FPS
-from game import Game
+from screenmanager import ScreenManager
+from screens.game import Game
 
 
 def main():
     pygame.init()
     screen = pygame.display.set_mode(SIZE)
 
-    game = Game()
-
+    ScreenManager.change_screen(Game())
     clock = pygame.time.Clock()
     running = True
     while running:
@@ -17,13 +17,16 @@ def main():
             # при закрытии окна
             if event.type == pygame.QUIT:
                 running = False
-            # if event.type == pygame.MOUSEBUTTONDOWN:
-            #     ui.get_click(event.pos)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                ScreenManager.current_screen.ui.on_mousedown(event.pos)
+            elif event.type == pygame.MOUSEBUTTONUP:
+                ScreenManager.current_screen.ui.on_mouseup(event.pos)
 
         screen.fill((0, 0, 0))
 
-        game.process_keys(pygame.key.get_pressed())
-        game.render(screen)
+        ScreenManager.current_screen.process_keys(pygame.key.get_pressed())
+        ScreenManager.current_screen.render(screen)
+        ScreenManager.current_screen.ui.render(screen)
 
         # обновление экрана
         pygame.display.flip()
