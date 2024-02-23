@@ -9,7 +9,16 @@ from ui import UI, Button
 class MainMenu:
     def __init__(self):
         from screens.game import Game
-        self.ui = UI([Button("Играть", Vector2(WIDTH / 2, HEIGHT / 2), lambda: ScreenManager.change_screen(Game()))])
+        from screens.ipselector import IPSelector
+
+        self.ui = UI([
+            Button("Играть",
+                   Vector2(WIDTH / 2, HEIGHT / 2 - 60), (300, 80),
+                   lambda: ScreenManager.change_screen(Game())),
+            Button("Игра по сети",
+                   Vector2(WIDTH / 2, HEIGHT / 2 + 60), (300, 80),
+                   lambda: ScreenManager.change_screen(IPSelector())),
+        ])
 
     def render(self, screen: pygame.Surface):
         pass

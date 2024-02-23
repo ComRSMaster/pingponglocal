@@ -1,5 +1,6 @@
 import math
 from collections import deque
+from typing import Callable
 
 import pygame
 from pygame import Vector2
@@ -13,7 +14,11 @@ class Ball(pygame.sprite.Sprite):
     PATH_SIZE = 60
     SCREEN_BOX = pygame.Rect(0, 0, WIDTH, HEIGHT)
 
-    def __init__(self, position: Vector2, velocity: Vector2, group: pygame.sprite.Group):
+    def __init__(self,
+                 position: Vector2,
+                 velocity: Vector2,
+                 group: pygame.sprite.Group,
+                 on_die: Callable):
         super().__init__()
         self.radius = 4
         self.pos = position
@@ -24,6 +29,7 @@ class Ball(pygame.sprite.Sprite):
 
         self.image = pygame.Surface([self.radius, self.radius])
         self.rect = self.image.get_rect()
+        self.on_die = on_die
 
         self.in_zone = True
         self.is_bounced = False
@@ -50,7 +56,9 @@ class Ball(pygame.sprite.Sprite):
                 b = -block.angle % (2 * math.pi)
                 if min(abs(b - a), abs(b - 2 * math.pi - a)) > Block.BLOCK_WIDTH:
                     if dist_to_center > Block.MOVE_RADIUS:
+                        # die
                         self.in_zone = False
+                        self.on_die()
                 elif not self.is_bounced:
                     self.vel.rotate_ip_rad(2 * y + 2 * a)
                     self.is_bounced = True

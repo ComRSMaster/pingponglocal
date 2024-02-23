@@ -3,6 +3,7 @@ import pygame
 from constants import SIZE, FPS
 from screenmanager import ScreenManager
 from screens.game import Game
+from screens.ipselector import IPSelector
 
 
 def main():

@@ -16,7 +16,7 @@ class Block:
     # MIN_X = PADDING
 
     def __init__(self):
-        self.angle = -3
+        self.angle = -2
 
     def render(self, screen: pygame.Surface):
         pygame.draw.circle(screen, (50, 50, 50), self.CENTER, self.MOVE_RADIUS)
