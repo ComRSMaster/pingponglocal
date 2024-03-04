@@ -1,11 +1,11 @@
 import pygame
 from pygame import Vector2
 
-from constants import WIDTH, HEIGHT
+from constants import WIDTH, HEIGHT, FPS
 
 
 class Block:
-    SPEED = 0.03
+    SPEED = 3.5 / FPS
     PADDING = 50
     MOVE_RADIUS = min(WIDTH / 2, HEIGHT / 2) - PADDING
     CENTER = Vector2(WIDTH / 2, HEIGHT / 2)

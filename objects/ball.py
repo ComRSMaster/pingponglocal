@@ -5,12 +5,12 @@ from typing import Callable
 import pygame
 from pygame import Vector2
 
-from constants import WIDTH, HEIGHT
+from constants import WIDTH, HEIGHT, FPS
 from objects.block import Block
 
 
 class Ball(pygame.sprite.Sprite):
-    GRAVITY = Vector2(0, .01)
+    GRAVITY = Vector2(0, 1 / FPS)
     PATH_SIZE = 60
     SCREEN_BOX = pygame.Rect(0, 0, WIDTH, HEIGHT)
 
@@ -27,8 +27,8 @@ class Ball(pygame.sprite.Sprite):
         self.arrow.append(self.pos.__copy__())
         self.add(group)
 
-        self.image = pygame.Surface([self.radius, self.radius])
-        self.rect = self.image.get_rect()
+        self.image = None
+        self.rect = pygame.Rect(position.x - self.radius, position.y - self.radius, self.radius, self.radius)
         self.on_die = on_die
 
         self.in_zone = True
@@ -45,6 +45,7 @@ class Ball(pygame.sprite.Sprite):
 
     def update(self, block: Block):
         self.pos += self.vel
+        self.rect.update(self.pos.x - self.radius, self.pos.y - self.radius, self.radius, self.radius)
         self.vel += self.GRAVITY
         self.arrow.append(self.pos.__copy__())
         dist_to_center = self.pos.distance_to((WIDTH / 2, HEIGHT / 2))

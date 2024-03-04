@@ -59,7 +59,7 @@ class Selectable:
 
     def global_mousedown(self, pos: tuple[int, int]):
         if self.rect.collidepoint(pos):
-            print('on_mousedown')
+            # print('on_mousedown')
             self.selected = True
             self.state = Button.State.PRESSED
             self.on_mousedown()
@@ -68,7 +68,7 @@ class Selectable:
 
     def global_mouseup(self, pos: tuple[int, int]):
         if self.rect.collidepoint(pos):
-            print('on_mouseup')
+            # print('on_mouseup')
             self.state = Button.State.HOVERED
             self.on_click()
         else:
